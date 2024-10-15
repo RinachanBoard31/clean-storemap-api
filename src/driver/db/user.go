@@ -14,6 +14,9 @@ type User struct {
 	Id        int `gorm:"primaryKey"`
 	Name      string
 	Email     string
+	Age       int
+	Sex       float32
+	Gender    float32
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

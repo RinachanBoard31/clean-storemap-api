@@ -22,8 +22,11 @@ func NewUserRepository(userDriver UserDriver) port.UserRepository {
 
 func (ug *UserGateway) Create(user *model.User) error {
 	dbUser := &db.User{
-		Name:  user.Name,
-		Email: user.Email,
+		Name:   user.Name,
+		Email:  user.Email,
+		Age:    user.Age,
+		Sex:    user.Sex,
+		Gender: user.Gender,
 	}
 	if err := ug.userDriver.CreateUser(dbUser); err != nil {
 		return err

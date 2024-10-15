@@ -25,8 +25,11 @@ func TestCreate(t *testing.T) {
 	mockUserRepository.On("CreateUser").Return(nil)
 	ug := &UserGateway{userDriver: mockUserRepository}
 	user := &model.User{
-		Name:  "noiman",
-		Email: "noiman@groovex.co.jp",
+		Name:   "noiman",
+		Email:  "noiman@groovex.co.jp",
+		Age:    35,
+		Sex:    1.0,
+		Gender: -0.5,
 	}
 
 	/* Act */

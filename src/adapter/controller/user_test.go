@@ -73,7 +73,7 @@ func TestCreateUser(t *testing.T) {
 	c, rec := newRouter()
 	var expected error = nil
 	// デフォルトでリクエストメソッドがGETのため、POSTに変更。こういうPOSTリクエストが来たことにする
-	reqBody := `{"name":"noiman","email":"noiman@groovex.co.jp"}`
+	reqBody := `{"name":"noiman","email":"noiman@groovex.co.jp","age":10,"sex":0.4,"gender":-0.3}`
 	req := httptest.NewRequest(http.MethodPost, "/user", bytes.NewBufferString(reqBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	c.SetRequest(req)

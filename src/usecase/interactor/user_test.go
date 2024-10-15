@@ -29,7 +29,7 @@ func (m *MockUserOutputPort) OutputCreateResult() error {
 func TestCreateUser(t *testing.T) {
 	/* Arrange */
 	var expected error = nil
-	user := &model.User{Id: 1, Name: "natori", Email: "test@example.com"}
+	user := &model.User{Id: 1, Name: "natori", Email: "test@example.com", Age: 52, Sex: -0.2, Gender: 1.0}
 
 	mockUserRepository := new(MockUserRepository)
 	mockUserRepository.On("Create").Return(nil)

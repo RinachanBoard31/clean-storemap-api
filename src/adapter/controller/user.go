@@ -27,9 +27,15 @@ type UserController struct {
 	userRepositoryFactory UserRepositoryFactory
 }
 
+// 0が存在しないとして扱われるため数字型(int, float32)にvalidate:"required"を使用していない。(requiredがなくても型確認はされます。)
+// 数字型のものが未入力であれば0として扱われる
+// 0を存在する値とする場合にはカスタムバリデーションを使用する必要があり、カスタムバリデーションにはrouterで定義されたecho.New()を使用するため今回はカスタムバリデーションを使用しない。
 type UserRequestBody struct {
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Name   string  `json:"name" validate:"required"`
+	Email  string  `json:"email" validate:"required,email"`
+	Age    int     `json:"age"`
+	Sex    float32 `json:"sex"`
+	Gender float32 `json:"gender"`
 }
 
 func NewUserController(userDriverFactory UserDriverFactory, userOutputFactory UserOutputFactory, userInputFactory UserInputFactory, userRepositoryFactory UserRepositoryFactory) UserI {
@@ -49,7 +55,7 @@ func (uc *UserController) CreateUser(c echo.Context) error {
 	if err := c.Validate(&u); err != nil {
 		return c.JSON(http.StatusInternalServerError, err.(validator.ValidationErrors).Error())
 	}
-	user, err := model.NewUser(u.Name, u.Email)
+	user, err := model.NewUser(u.Name, u.Email, u.Age, u.Sex, u.Gender)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
