@@ -25,22 +25,6 @@ func parseSetCookie(setCookie string) map[string]string {
 	return attributes
 }
 
-func TestOutputCreateResult(t *testing.T) {
-	/* Arrange */
-	expected := "{}\n"
-	c, rec := newRouter()
-	up := &UserPresenter{c: c}
-
-	/* Act */
-	actual := up.OutputCreateResult()
-
-	/* Assert */
-	// up.OutputCreateResultがJSONを返すこと
-	if assert.NoError(t, actual) {
-		assert.Equal(t, expected, rec.Body.String())
-	}
-}
-
 func TestOutputUpdateResult(t *testing.T) {
 	/* Arrange */
 	expected := "{}\n"
@@ -48,7 +32,7 @@ func TestOutputUpdateResult(t *testing.T) {
 	up := &UserPresenter{c: c}
 
 	/* Act */
-	actual := up.OutputCreateResult()
+	actual := up.OutputUpdateResult()
 
 	/* Assert */
 	if assert.NoError(t, actual) {

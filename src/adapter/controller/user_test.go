@@ -72,11 +72,6 @@ func (m *MockJwtDriverFactory) GenerateToken(subject string) (string, error) {
 	return args.Get(0).(string), args.Error(1)
 }
 
-func (m *MockUserOutputFactoryFuncObject) OutputCreateResult() error {
-	args := m.Called()
-	return args.Error(0)
-}
-
 func (m *MockUserOutputFactoryFuncObject) OutputUpdateResult() error {
 	args := m.Called()
 	return args.Error(0)
@@ -155,10 +150,6 @@ func mockUserRepositoryFactoryFunc(userDriver gateway.UserDriver, googleOAuthDri
 	return &MockUserRepositoryFactoryFuncObject{}
 }
 
-func (m *MockUserInputFactoryFuncObject) CreateUser(*model.User) error {
-	args := m.Called()
-	return args.Error(0)
-}
 func (m *MockUserInputFactoryFuncObject) UpdateUser(string, model.ChangeForUser) error {
 	args := m.Called()
 	return args.Error(0)
@@ -177,46 +168,6 @@ func (m *MockUserInputFactoryFuncObject) LoginUser(*model.UserCredentials) error
 func (m *MockUserInputFactoryFuncObject) SignupDraft(string) error {
 	args := m.Called()
 	return args.Error(0)
-}
-
-func TestCreateUser(t *testing.T) {
-	/* Arrange */
-	c, rec := newRouter()
-	var expected error = nil
-	// デフォルトでリクエストメソッドがGETのため、POSTに変更。こういうPOSTリクエストが来たことにする
-	reqBody := `{"name":"noiman","email":"noiman@groovex.co.jp","age":10,"sex":0.4,"gender":-0.3}`
-	req := httptest.NewRequest(http.MethodPost, "/user", bytes.NewBufferString(reqBody))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	c.SetRequest(req)
-
-	// Driverだけは実体が必要
-	mockUserDriverFactory := new(MockUserDriverFactory)
-	mockUserDriverFactory.On("CreateUser").Return(nil)
-
-	// InputPortのCreateUserのモックを作成
-	uc := &UserController{
-		userDriverFactory:     mockUserDriverFactory,
-		userOutputFactory:     mockUserOutputFactoryFunc,
-		userRepositoryFactory: mockUserRepositoryFactoryFunc,
-	}
-
-	// newUserInputPort.CreateUser()をするためには、CreateUser()を持つmockUserInputFactoryFuncObjectがuserInputFactoryに必要だから無名関数でreturnする必要があった
-	mockUserInputFactoryFuncObject := new(MockUserInputFactoryFuncObject)
-	mockUserInputFactoryFuncObject.On("CreateUser").Return(expected)
-	uc.userInputFactory = func(repository port.UserRepository, output port.UserOutputPort) port.UserInputPort {
-		return mockUserInputFactoryFuncObject
-	}
-
-	/* Act */
-	actual := uc.CreateUser(c)
-
-	/* Assert */
-	// uc.CreateUser()がUserInputPort.CreateUser()を返すこと
-	assert.Equal(t, expected, actual)
-	// echoが正しく起動したか
-	assert.Equal(t, http.StatusOK, rec.Code)
-	// InputPortのCreateUserが1回呼ばれること
-	mockUserInputFactoryFuncObject.AssertNumberOfCalls(t, "CreateUser", 1)
 }
 
 func TestUpdateUser(t *testing.T) {

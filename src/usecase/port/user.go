@@ -5,7 +5,6 @@ import (
 )
 
 type UserInputPort interface {
-	CreateUser(*model.User) error
 	UpdateUser(string, model.ChangeForUser) error
 	LoginUser(*model.UserCredentials) error
 	GetAuthUrl() error
@@ -24,7 +23,6 @@ type UserRepository interface {
 }
 
 type UserOutputPort interface {
-	OutputCreateResult() error
 	OutputUpdateResult() error
 	OutputLoginResult(string) error
 	OutputAuthUrl(string) error

@@ -17,10 +17,6 @@ func NewUserOutputPort(c echo.Context) port.UserOutputPort {
 	return &UserPresenter{c: c}
 }
 
-func (up *UserPresenter) OutputCreateResult() error {
-	return up.c.JSON(http.StatusOK, map[string]interface{}{})
-}
-
 func (up *UserPresenter) OutputUpdateResult() error {
 	return up.c.JSON(http.StatusOK, map[string]interface{}{})
 }

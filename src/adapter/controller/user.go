@@ -14,7 +14,6 @@ import (
 )
 
 type UserI interface {
-	CreateUser(c echo.Context) error
 	UpdateUser(c echo.Context) error
 	LoginUser(c echo.Context) error
 	GetAuthUrl(c echo.Context) error
@@ -37,16 +36,6 @@ type UserController struct {
 	userRepositoryFactory    UserRepositoryFactory
 }
 
-// 0が存在しないとして扱われるため数字型(int, float32)にvalidate:"required"を使用していない。(requiredがなくても型確認はされます。)
-// 数字型のものが未入力であれば0として扱われる
-// 0を存在する値とする場合にはカスタムバリデーションを使用する必要があり、カスタムバリデーションにはrouterで定義されたecho.New()を使用するため今回はカスタムバリデーションを使用しない。
-type UserRequestBody struct {
-	Name   string  `json:"name" validate:"required"`
-	Email  string  `json:"email" validate:"required,email"`
-	Age    int     `json:"age"`
-	Sex    float32 `json:"sex"`
-	Gender float32 `json:"gender"`
-}
 type UserCredentialsRequestBody struct {
 	Email string `json:"email" validate:"required,email"`
 }
@@ -67,21 +56,6 @@ func NewUserController(
 		userInputFactory:         userInputFactory,
 		userRepositoryFactory:    userRepositoryFactory,
 	}
-}
-
-func (uc *UserController) CreateUser(c echo.Context) error {
-	var u UserRequestBody
-	if err := c.Bind(&u); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	if err := c.Validate(&u); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.(validator.ValidationErrors).Error())
-	}
-	user, err := model.NewUser(u.Name, u.Email, u.Age, u.Sex, u.Gender)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return uc.newUserInputPort(c).CreateUser(user)
 }
 
 func (uc *UserController) UpdateUser(c echo.Context) error {

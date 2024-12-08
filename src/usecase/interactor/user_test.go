@@ -55,11 +55,6 @@ func (m *MockUserRepository) GenerateAccessToken(id string) (string, error) {
 	return args.Get(0).(string), args.Error(1)
 }
 
-func (m *MockUserOutputPort) OutputCreateResult() error {
-	args := m.Called()
-	return args.Error(0)
-}
-
 func (m *MockUserOutputPort) OutputUpdateResult() error {
 	args := m.Called()
 	return args.Error(0)
@@ -88,29 +83,6 @@ func (m *MockUserOutputPort) OutputAlreadySignedup() error {
 func (m *MockUserOutputPort) OutputHasEmailInRequestBody() error {
 	args := m.Called()
 	return args.Error(0)
-}
-
-func TestCreateUser(t *testing.T) {
-	/* Arrange */
-	var expected error = nil
-	user := &model.User{Name: "natori", Email: "test@example.com", Age: 52, Sex: -0.2, Gender: 1.0}
-	returnedUser := user
-	returnedUser.Id = "id_1"
-
-	mockUserRepository := new(MockUserRepository)
-	mockUserRepository.On("Create", user).Return(returnedUser, nil)
-	mockUserOutputPort := new(MockUserOutputPort)
-	mockUserOutputPort.On("OutputCreateResult").Return(nil)
-
-	ui := &UserInteractor{userRepository: mockUserRepository, userOutputPort: mockUserOutputPort}
-
-	/* Act */
-	actual := ui.CreateUser(user)
-
-	/* Assert */
-	assert.Equal(t, expected, actual)
-	mockUserRepository.AssertNumberOfCalls(t, "Create", 1)
-	mockUserOutputPort.AssertNumberOfCalls(t, "OutputCreateResult", 1)
 }
 
 func TestUpdateUser(t *testing.T) {

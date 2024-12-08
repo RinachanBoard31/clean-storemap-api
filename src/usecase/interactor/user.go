@@ -17,17 +17,6 @@ func NewUserInputPort(userRepository port.UserRepository, userOutputPort port.Us
 	}
 }
 
-func (ui *UserInteractor) CreateUser(user *model.User) error {
-
-	if _, err := ui.userRepository.Create(user); err != nil {
-		return err
-	}
-	if err := ui.userOutputPort.OutputCreateResult(); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (ui *UserInteractor) UpdateUser(id string, updateData model.ChangeForUser) error {
 	// emailを更新しようとした場合にはエラーを返す
 	if _, ok := updateData["email"]; ok {
@@ -92,12 +81,9 @@ func (ui *UserInteractor) SignupDraft(code string) error {
 	}
 
 	// 先にemailのみで登録する(仮登録)
-	user := &model.User{
-		Name:   "",
-		Email:  email,
-		Age:    0,
-		Sex:    0.0,
-		Gender: 0.0,
+	user, err := model.NewUser("", email, 0, 0.0, 0.0)
+	if err != nil {
+		return err
 	}
 	// 存在しない場合にerrが返ってくるため、nilであればすでに存在しているということ
 	if err := ui.userRepository.Exist(user); err == nil {
