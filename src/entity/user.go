@@ -20,6 +20,11 @@ type UserCredentials struct {
 	Email string
 }
 
+type UserQuery struct {
+	Email string
+	Id    string
+}
+
 type ChangeForUser map[string]interface{}
 
 func emailValid(email string) error {
@@ -80,18 +85,6 @@ func NewUser(name string, email string, age int, sex float32, gender float32) (*
 		Age:    AgeFormat(age),
 		Sex:    SexFormat(sex),
 		Gender: GenderFormat(gender),
-	}
-	return user, nil
-}
-
-func NewUserCredentials(email string) (*UserCredentials, error) {
-	// バリデーションのチェック
-	emailValidError := emailValid(email)
-	if err := errors.Join(emailValidError); err != nil {
-		return &UserCredentials{}, err
-	}
-	user := &UserCredentials{
-		Email: email,
 	}
 	return user, nil
 }

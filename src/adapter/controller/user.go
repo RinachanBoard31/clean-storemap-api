@@ -6,16 +6,15 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"gopkg.in/go-playground/validator.v9"
 
 	"clean-storemap-api/src/adapter/gateway"
-	model "clean-storemap-api/src/entity"
+	accssesTypel "clean-storemap-api/src/entity"
 	"clean-storemap-api/src/usecase/port"
 )
 
 type UserI interface {
 	UpdateUser(c echo.Context) error
-	LoginUser(c echo.Context) error
+	LoginWithAuth(c echo.Context) error
 	GetAuthUrl(c echo.Context) error
 	SignupWithAuth(c echo.Context) error
 }
@@ -34,10 +33,6 @@ type UserController struct {
 	userOutputFactory        UserOutputFactory
 	userInputFactory         UserInputFactory
 	userRepositoryFactory    UserRepositoryFactory
-}
-
-type UserCredentialsRequestBody struct {
-	Email string `json:"email" validate:"required,email"`
 }
 
 func NewUserController(
@@ -67,7 +62,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	updateData := make(model.ChangeForUser)
+	updateData := make(accssesTypel.ChangeForUser)
 	// 更新データを型変換しつつ格納する
 
 	// name
@@ -110,28 +105,17 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 	return uc.newUserInputPort(c).UpdateUser(id, updateData)
 }
 
-func (uc *UserController) LoginUser(c echo.Context) error {
-	// UserCredentialsの値を受け取りuserが既に登録されているかを確かめるキー用の型を作成する
-	var u UserCredentialsRequestBody
-	if err := c.Bind(&u); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	if err := c.Validate(&u); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.(validator.ValidationErrors).Error())
-	}
-	user, err := model.NewUserCredentials(u.Email)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-
-	if err := uc.newUserInputPort(c).LoginUser(user); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return nil
+func (uc *UserController) LoginWithAuth(c echo.Context) error {
+	codeParameter := c.QueryParam("code")
+	return uc.newUserInputPort(c).LoginUser(codeParameter)
 }
 
 func (uc *UserController) GetAuthUrl(c echo.Context) error {
-	return uc.newUserInputPort(c).GetAuthUrl()
+	accessedType := c.QueryParam("accessedType")
+	if accessedType != "signup" && accessedType != "login" {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{"error": "accessedType is not correct"})
+	}
+	return uc.newUserInputPort(c).GetAuthUrl(accessedType)
 }
 
 func (uc *UserController) SignupWithAuth(c echo.Context) error {

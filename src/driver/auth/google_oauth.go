@@ -15,9 +15,9 @@ func NewGoogleOAuthDriver() *GoogleOAuthDriver {
 	return &GoogleOAuthDriver{}
 }
 
-func newGoogleOauthConfig() *oauth2.Config {
+func newGoogleOauthConfig(actionType string) *oauth2.Config {
 	// Google認証を行うためのリダイレクト先のURL
-	redirectURL := os.Getenv("BACKEND_URL") + "/auth/signup"
+	redirectURL := os.Getenv("BACKEND_URL") + "/auth/" + actionType
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
 	conf := &oauth2.Config{
@@ -30,16 +30,16 @@ func newGoogleOauthConfig() *oauth2.Config {
 	return conf
 }
 
-func (oauth *GoogleOAuthDriver) GenerateUrl() string {
+func (oauth *GoogleOAuthDriver) GenerateUrl(actionType string) string {
 	//	認証情報を取得
-	config := newGoogleOauthConfig()
+	config := newGoogleOauthConfig(actionType)
 	// URLの生成
 	return config.AuthCodeURL("state", oauth2.AccessTypeOffline)
 }
 
 // GoogleのOAuth認証を行い、ユーザー情報を取得する
-func getProfile(code string) (map[string]interface{}, error) {
-	config := newGoogleOauthConfig()
+func getProfile(code string, actionType string) (map[string]interface{}, error) {
+	config := newGoogleOauthConfig(actionType)
 	ctx := context.Background()
 	// 認証情報を取得
 	oauth2Token, err := config.Exchange(ctx, code)
@@ -68,8 +68,8 @@ func getProfile(code string) (map[string]interface{}, error) {
 	return profile, nil
 }
 
-func (oauth *GoogleOAuthDriver) GetEmail(code string) (string, error) {
-	profile, err := getProfile(code)
+func (oauth *GoogleOAuthDriver) GetEmail(code string, actionType string) (string, error) {
+	profile, err := getProfile(code, actionType)
 	if err != nil {
 		return "", err
 	}

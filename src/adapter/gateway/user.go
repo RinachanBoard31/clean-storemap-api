@@ -22,8 +22,8 @@ type UserDriver interface {
 }
 
 type GoogleOAuthDriver interface {
-	GenerateUrl() string
-	GetEmail(string) (string, error)
+	GenerateUrl(string) string
+	GetEmail(string, string) (string, error)
 }
 
 type JwtDriver interface {
@@ -95,11 +95,23 @@ func (ug *UserGateway) Get(id string) (*model.User, error) {
 	return user, nil
 }
 
-func (ug *UserGateway) FindBy(userCredentials *model.UserCredentials) (*model.User, error) {
-	dbUser, err := ug.userDriver.FindByEmail(userCredentials.Email)
-	if err != nil {
-		return nil, err
+func (ug *UserGateway) FindBy(query *model.UserQuery) (*model.User, error) {
+	dbUser := &db.User{}
+	var err error = nil
+	if query.Id != "" {
+		dbUser, err = ug.userDriver.FindById(query.Id)
+		if err != nil {
+			return nil, err
+		}
 	}
+
+	if (query.Email != "" && *dbUser == db.User{}) {
+		dbUser, err = ug.userDriver.FindByEmail(query.Email)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	user := &model.User{
 		Id:     dbUser.Id,
 		Name:   dbUser.Name,
@@ -111,12 +123,12 @@ func (ug *UserGateway) FindBy(userCredentials *model.UserCredentials) (*model.Us
 	return user, nil
 }
 
-func (ug *UserGateway) GenerateAuthUrl() string {
-	return ug.googleOAuthDriver.GenerateUrl()
+func (ug *UserGateway) GenerateAuthUrl(actionType string) string {
+	return ug.googleOAuthDriver.GenerateUrl(actionType)
 }
 
-func (ug *UserGateway) GetUserInfoWithAuthCode(code string) (string, error) {
-	email, err := ug.googleOAuthDriver.GetEmail(code)
+func (ug *UserGateway) GetUserInfoWithAuthCode(code string, actionType string) (string, error) {
+	email, err := ug.googleOAuthDriver.GetEmail(code, actionType)
 	if err != nil {
 		return "", err
 	}

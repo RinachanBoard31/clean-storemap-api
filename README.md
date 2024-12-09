@@ -51,5 +51,8 @@ $ curl -H "Content-Type: application/json" -X POST -d "@example/login_user_api_e
 
 ### Auth
 ```
-$ curl http://localhost:8080/auth
+# ログイン用
+$ curl http://localhost:8080/auth?accessedType=login
+# サインアップ用
+$ curl http://localhost:8080/auth?accessedType=signup
 ```

@@ -40,27 +40,26 @@ func TestOutputUpdateResult(t *testing.T) {
 	}
 }
 
-func TestOutputLoginResult(t *testing.T) {
+func TestOutputLoginWithAuth(t *testing.T) {
 	/* Arrange */
-	expected := "{}\n"
+	t.Setenv("JWT_TOKEN_NAME", "auth_token")
 	token := "test_token"
-	os.Setenv("JWT_TOKEN_NAME", "auth_token")
+	var expected error = nil
 	c, rec := newRouter()
 	up := &UserPresenter{c: c}
 
 	/* Act */
-	actual := up.OutputLoginResult(token)
+	actual := up.OutputLoginWithAuth(token)
 
 	/* Assert */
-	if assert.NoError(t, actual) {
-		assert.Equal(t, expected, rec.Body.String())
-	}
+	assert.Equal(t, http.StatusFound, rec.Code)
+	assert.Equal(t, expected, actual)
+
 	// レスポンスヘッダーからSet-Cookieを取得
 	setCookie := rec.Header().Get("Set-Cookie")
 	cookieAttributes := parseSetCookie(setCookie)
 	assert.Equal(t, token, cookieAttributes[os.Getenv("JWT_TOKEN_NAME")])
 }
-
 func TestOutputAuthUrl(t *testing.T) {
 	/* Arrange */
 	url := "https://www.google.com"
@@ -133,4 +132,19 @@ func TestOutputHasEmailInRequestBody(t *testing.T) {
 	if assert.NoError(t, actual) {
 		assert.Equal(t, expected, rec.Body.String())
 	}
+}
+
+func TestOutputNotRegistered(t *testing.T) {
+	/* Arrange */
+	var expected error = nil
+	c, rec := newRouter()
+	up := &UserPresenter{c: c}
+
+	/* Act */
+	actual := up.OutputNotRegistered()
+
+	/* Assert */
+	assert.Equal(t, http.StatusFound, rec.Code)
+	assert.Equal(t, expected, actual)
+
 }
