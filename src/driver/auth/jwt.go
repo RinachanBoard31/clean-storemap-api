@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"clean-storemap-api/src/entity/errors"
 	"os"
 	"time"
 
@@ -22,7 +23,7 @@ func (auth *JwtDriver) GenerateToken(subject string) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // 有効期限は24時間
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SIGNING_KEY")))
 	if err != nil {
-		return "", err
+		return "", errors.ErrFailedGenerateToken
 	}
 	return tokenString, nil
 }
