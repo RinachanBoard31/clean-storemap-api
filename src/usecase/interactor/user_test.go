@@ -55,6 +55,11 @@ func (m *MockUserRepository) GenerateAccessToken(id string) (string, error) {
 	return args.Get(0).(string), args.Error(1)
 }
 
+func (m *MockUserOutputPort) HandleError(err error) error {
+	args := m.Called(err)
+	return args.Error(0)
+}
+
 func (m *MockUserOutputPort) OutputUpdateResult() error {
 	args := m.Called()
 	return args.Error(0)

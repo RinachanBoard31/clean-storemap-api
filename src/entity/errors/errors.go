@@ -14,9 +14,10 @@ var (
 var (
 	ErrGetEmailFailed      = errors.New("failed to get email")
 	ErrFailedGenerateToken = errors.New("failed to generate token")
-)
-var (
+	// ビジネスルール
 	ErrUnAuthorized = errors.New("failed to authorize")
+	// ユーザ向け
+	ErrUnAuthorizedForUser = errors.New("認証に失敗しました。")
 )
 
 // 未定義のエラー
@@ -26,9 +27,12 @@ var (
 
 // userのビジネスルール
 var (
-	ErrUserNotFound      = errors.New("user not found")
-	ErrUserAlreadyExists = errors.New("user already exists")
-	ErrInvalidUserData   = errors.New("invalid user data")
+	ErrUserNotFound       = errors.New("ユーザが見つかりません。")
+	ErrUserAlreadyExists  = errors.New("ユーザが既に存在します。")
+	ErrInvalidUserData    = errors.New("ユーザのデータが不正です。")
+	ErrInvalidEmail       = errors.New("ユーザのemailが不正です。")
+	ErrAgeBelowZero       = errors.New("年齢が0未満です。")
+	ErrInvalidEmailAndAge = errors.New("ユーザのemailと年齢が不正です。")
 )
 
 func Is(err, target error) bool {

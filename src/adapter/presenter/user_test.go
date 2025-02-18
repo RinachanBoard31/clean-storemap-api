@@ -1,6 +1,7 @@
 package presenter
 
 import (
+	"clean-storemap-api/src/entity/errors"
 	"net/http"
 	"os"
 	"strings"
@@ -23,6 +24,34 @@ func parseSetCookie(setCookie string) map[string]string {
 		}
 	}
 	return attributes
+}
+
+func TestHandleError(t *testing.T) {
+	/* Arrange */
+	testCases := []struct {
+		input        error
+		expectedCode int
+		expected     string
+	}{
+		{input: errors.ErrUserNotFound, expectedCode: http.StatusNotFound, expected: "{\"error\":\"Userが登録されていません。\"}\n"},
+		{input: errors.ErrUserAlreadyExists, expectedCode: http.StatusConflict, expected: "{\"error\":\"そのemailはすでに登録されています。\"}\n"},
+		{input: errors.ErrInvalidUserData, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"不正なデータが含まれています。\"}\n"},
+		{input: errors.ErrInvalidEmail, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"Emailが適した形ではありません。\"}\n"},
+		{input: errors.ErrAgeBelowZero, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"年齢が0未満です。\"}\n"},
+		{input: errors.ErrUnAuthorizedForUser, expectedCode: http.StatusUnauthorized, expected: "{\"error\":\"認証に失敗しました。\"}\n"},
+		{input: errors.ErrUnsupported, expectedCode: http.StatusInternalServerError, expected: "{\"error\":\"予期しないエラーが発生しました\"}\n"},
+	}
+	/* Act, Assert */
+	for _, tc := range testCases {
+		// recが1ループごとに切れないのでrouterは毎回作り直す。
+		c, rec := newRouter()
+		up := &UserPresenter{c: c}
+		actual := up.HandleError(tc.input)
+		if assert.NoError(t, actual) {
+			assert.Equal(t, tc.expectedCode, rec.Code)
+			assert.Equal(t, tc.expected, rec.Body.String())
+		}
+	}
 }
 
 func TestOutputUpdateResult(t *testing.T) {

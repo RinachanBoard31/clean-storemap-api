@@ -1,6 +1,7 @@
 package presenter
 
 import (
+	"clean-storemap-api/src/entity/errors"
 	"clean-storemap-api/src/usecase/port"
 	"net/http"
 	"os"
@@ -15,6 +16,26 @@ type UserPresenter struct {
 
 func NewUserOutputPort(c echo.Context) port.UserOutputPort {
 	return &UserPresenter{c: c}
+}
+
+func (up *UserPresenter) HandleError(err error) error {
+	if errors.Is(err, errors.ErrUserNotFound) {
+		return up.c.JSON(http.StatusNotFound, map[string]interface{}{"error": "Userが登録されていません。"})
+	} else if errors.Is(err, errors.ErrUserAlreadyExists) {
+		return up.c.JSON(http.StatusConflict, map[string]interface{}{"error": "そのemailはすでに登録されています。"})
+	} else if errors.Is(err, errors.ErrInvalidUserData) {
+		return up.c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "不正なデータが含まれています。"})
+	} else if errors.Is(err, errors.ErrInvalidEmail) {
+		return up.c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Emailが適した形ではありません。"})
+	} else if errors.Is(err, errors.ErrAgeBelowZero) {
+		return up.c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "年齢が0未満です。"})
+	}
+
+	// 認証関連のエラー
+	if errors.Is(err, errors.ErrUnAuthorizedForUser) {
+		return up.c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "認証に失敗しました。"})
+	}
+	return up.c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": "予期しないエラーが発生しました"})
 }
 
 func (up *UserPresenter) OutputUpdateResult() error {
