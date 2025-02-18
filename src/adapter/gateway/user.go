@@ -56,7 +56,7 @@ func convertToBusinessError(err error) error {
 	if errors.Is(err, errors.ErrFailedGenerateToken) {
 		return errors.ErrUnAuthorized
 	}
-	return err
+	return errors.ErrUnExpected
 }
 
 func (ug *UserGateway) Create(user *model.User) (*model.User, error) {

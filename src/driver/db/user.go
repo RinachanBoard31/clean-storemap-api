@@ -32,7 +32,7 @@ func convertGormError(err error) error {
 	} else if errors.Is(err, gorm.ErrInvalidData) {
 		return errors.ErrInvalidData
 	}
-	return err
+	return errors.ErrUnsupported
 }
 
 func (dbu *DbUserDriver) CreateUser(user *User) (*User, error) {

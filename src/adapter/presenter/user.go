@@ -32,7 +32,7 @@ func (up *UserPresenter) HandleError(err error) error {
 	}
 
 	// 認証関連のエラー
-	if errors.Is(err, errors.ErrUnAuthorizedForUser) {
+	if errors.Is(err, errors.ErrUnAuthorized) {
 		return up.c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "認証に失敗しました。"})
 	}
 	return up.c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": "予期しないエラーが発生しました"})
