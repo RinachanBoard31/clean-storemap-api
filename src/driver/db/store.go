@@ -49,7 +49,7 @@ func (dbs *DbStoreDriver) FindFavorite(storeId string, userId string) (*Favorite
 
 func (dbs *DbStoreDriver) FindFavoriteByUser(userId string) ([]*FavoriteStore, error) {
 	var stores []*FavoriteStore
-	err := DB.Where("user_id = ?", userId).First(&stores).Error
+	err := DB.Where("user_id = ?", userId).Find(&stores).Error
 	if err != nil {
 		return nil, convertGormError(err)
 	}
@@ -84,7 +84,7 @@ func (dbs *DbStoreDriver) GetTopStores() ([]*FavoriteStore, error) {
 	var stores []*FavoriteStore
 	for _, storeId := range topStoreIds {
 		var store FavoriteStore
-		err = DB.Where("store_id = ?", storeId).First(&store).Error
+		err = DB.Where("store_id = ?", storeId).Find(&store).Error
 		if err != nil {
 			return nil, convertGormError(err)
 		}
