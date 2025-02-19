@@ -26,7 +26,7 @@ func parseSetCookie(setCookie string) map[string]string {
 	return attributes
 }
 
-func TestHandleError(t *testing.T) {
+func TestOutputHandleError(t *testing.T) {
 	/* Arrange */
 	testCases := []struct {
 		input        error
@@ -46,7 +46,7 @@ func TestHandleError(t *testing.T) {
 		// recが1ループごとに切れないのでrouterは毎回作り直す。
 		c, rec := newRouter()
 		up := &UserPresenter{c: c}
-		actual := up.HandleError(tc.input)
+		actual := up.OutputHandleError(tc.input)
 		if assert.NoError(t, actual) {
 			assert.Equal(t, tc.expectedCode, rec.Code)
 			assert.Equal(t, tc.expected, rec.Body.String())

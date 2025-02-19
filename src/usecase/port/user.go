@@ -23,7 +23,7 @@ type UserRepository interface {
 }
 
 type UserOutputPort interface {
-	HandleError(error) error
+	OutputHandleError(error) error
 	OutputUpdateResult() error
 	OutputLoginResult(string) error
 	OutputAuthUrl(string) error

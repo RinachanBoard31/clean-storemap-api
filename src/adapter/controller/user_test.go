@@ -72,7 +72,7 @@ func (m *MockJwtDriverFactory) GenerateToken(subject string) (string, error) {
 	return args.Get(0).(string), args.Error(1)
 }
 
-func (m *MockUserOutputFactoryFuncObject) HandleError(err error) error {
+func (m *MockUserOutputFactoryFuncObject) OutputHandleError(err error) error {
 	args := m.Called(err)
 	return args.Error(0)
 }
