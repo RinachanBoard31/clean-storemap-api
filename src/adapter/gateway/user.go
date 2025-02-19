@@ -3,7 +3,6 @@ package gateway
 import (
 	db "clean-storemap-api/src/driver/db"
 	model "clean-storemap-api/src/entity"
-	"clean-storemap-api/src/entity/errors"
 	"clean-storemap-api/src/usecase/port"
 
 	"github.com/google/uuid"
@@ -39,26 +38,6 @@ func NewUserRepository(userDriver UserDriver, googleOAuthDriver GoogleOAuthDrive
 	}
 }
 
-func convertToBusinessError(err error) error {
-	// DB
-	if errors.Is(err, errors.ErrNotFound) {
-		return errors.ErrUserNotFound
-	} else if errors.Is(err, errors.ErrDuplicate) {
-		return errors.ErrUserAlreadyExists
-	} else if errors.Is(err, errors.ErrInvalidData) {
-		return errors.ErrInvalidUserData
-	}
-	// GoogleOAuth
-	if errors.Is(err, errors.ErrGetEmailFailed) {
-		return errors.ErrUnAuthorized
-	}
-	// JWT
-	if errors.Is(err, errors.ErrFailedGenerateToken) {
-		return errors.ErrUnAuthorized
-	}
-	return errors.ErrUnExpected
-}
-
 func (ug *UserGateway) Create(user *model.User) (*model.User, error) {
 	dbUser := &db.User{
 		Id:     uuid.New().String(),
@@ -71,7 +50,7 @@ func (ug *UserGateway) Create(user *model.User) (*model.User, error) {
 
 	dbUser, err := ug.userDriver.CreateUser(dbUser)
 	if err != nil {
-		return nil, convertToBusinessError(err)
+		return nil, ug.convertToBusinessError(err)
 	}
 	user.Id = dbUser.Id // createが成功していればidを取得できるのでセットする
 	return user, nil
@@ -79,7 +58,7 @@ func (ug *UserGateway) Create(user *model.User) (*model.User, error) {
 
 func (ug *UserGateway) Exist(user *model.User) error {
 	if _, err := ug.userDriver.FindByEmail(user.Email); err != nil {
-		return convertToBusinessError(err)
+		return ug.convertToBusinessError(err)
 	}
 	return nil
 }
@@ -95,7 +74,7 @@ func (ug *UserGateway) Update(user *model.User, updateData model.ChangeForUser) 
 		Gender: user.Gender,
 	}
 	if err := ug.userDriver.UpdateUser(dbUser, updateData); err != nil {
-		return convertToBusinessError(err)
+		return ug.convertToBusinessError(err)
 	}
 	return nil
 }
@@ -103,7 +82,7 @@ func (ug *UserGateway) Update(user *model.User, updateData model.ChangeForUser) 
 func (ug *UserGateway) Get(id string) (*model.User, error) {
 	dbUser, err := ug.userDriver.FindById(id)
 	if err != nil {
-		return nil, convertToBusinessError(err)
+		return nil, ug.convertToBusinessError(err)
 	}
 	user := &model.User{
 		Id:     dbUser.Id,
@@ -119,7 +98,7 @@ func (ug *UserGateway) Get(id string) (*model.User, error) {
 func (ug *UserGateway) FindBy(userCredentials *model.UserCredentials) (*model.User, error) {
 	dbUser, err := ug.userDriver.FindByEmail(userCredentials.Email)
 	if err != nil {
-		return nil, convertToBusinessError(err)
+		return nil, ug.convertToBusinessError(err)
 	}
 	user := &model.User{
 		Id:     dbUser.Id,
@@ -139,7 +118,7 @@ func (ug *UserGateway) GenerateAuthUrl() string {
 func (ug *UserGateway) GetUserInfoWithAuthCode(code string) (string, error) {
 	email, err := ug.googleOAuthDriver.GetEmail(code)
 	if err != nil {
-		return "", convertToBusinessError(err)
+		return "", ug.convertToBusinessError(err)
 	}
 	return email, nil
 }
@@ -147,7 +126,7 @@ func (ug *UserGateway) GetUserInfoWithAuthCode(code string) (string, error) {
 func (ug *UserGateway) GenerateAccessToken(id string) (string, error) {
 	token, err := ug.jwtDriver.GenerateToken(id)
 	if err != nil {
-		return "", convertToBusinessError(err)
+		return "", ug.convertToBusinessError(err)
 	}
 	return token, nil
 }

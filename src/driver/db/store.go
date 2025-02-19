@@ -1,10 +1,7 @@
 package db
 
 import (
-	"errors"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type DbStoreDriver struct{}
@@ -30,9 +27,9 @@ type FavoriteStore struct {
 
 func (dbs *DbStoreDriver) GetStores() ([]*FavoriteStore, error) {
 	var stores []*FavoriteStore
-	err := DB.Find(&stores).Error
+	err := DB.First(&stores).Error
 	if err != nil {
-		return nil, err
+		return nil, convertGormError(err)
 	}
 	return stores, nil
 }
@@ -41,10 +38,7 @@ func (dbs *DbStoreDriver) FindFavorite(storeId string, userId string) (*Favorite
 	var stores []FavoriteStore
 	err := DB.Where("store_id = ? AND user_id = ?", storeId, userId).Find(&stores).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
+		return nil, convertGormError(err)
 	}
 	if len(stores) == 0 {
 		return nil, nil
@@ -55,9 +49,9 @@ func (dbs *DbStoreDriver) FindFavorite(storeId string, userId string) (*Favorite
 
 func (dbs *DbStoreDriver) FindFavoriteByUser(userId string) ([]*FavoriteStore, error) {
 	var stores []*FavoriteStore
-	err := DB.Where("user_id = ?", userId).Find(&stores).Error
+	err := DB.Where("user_id = ?", userId).First(&stores).Error
 	if err != nil {
-		return nil, err
+		return nil, convertGormError(err)
 	}
 	return stores, nil
 }
@@ -65,7 +59,7 @@ func (dbs *DbStoreDriver) FindFavoriteByUser(userId string) ([]*FavoriteStore, e
 func (dbs *DbStoreDriver) SaveStore(dbStore *FavoriteStore) error {
 	err := DB.Create(&dbStore).Error
 	if err != nil {
-		return err
+		return convertGormError(err)
 	}
 	return nil
 }
@@ -83,17 +77,16 @@ func (dbs *DbStoreDriver) GetTopStores() ([]*FavoriteStore, error) {
 		Limit(10).
 		Pluck("store_id", &topStoreIds).Error
 	if err != nil {
-		return nil, err
+		return nil, convertGormError(err)
 	}
 
 	// 取得したstore_idに対応するfavorite_storeを順番に取得
 	var stores []*FavoriteStore
 	for _, storeId := range topStoreIds {
 		var store FavoriteStore
-		err = DB.Where("store_id = ?", storeId).
-			First(&store).Error
+		err = DB.Where("store_id = ?", storeId).First(&store).Error
 		if err != nil {
-			return nil, err
+			return nil, convertGormError(err)
 		}
 		stores = append(stores, &store)
 	}

@@ -4,26 +4,18 @@ import (
 	"errors"
 )
 
+// 汎用エラー
 var (
-	ErrNotFound    = errors.New("record not found")
-	ErrDuplicate   = errors.New("duplicate record")
-	ErrInvalidData = errors.New("invalid data")
+	ErrDBConnection = errors.New("failed to connect database")
+	ErrUnsupported  = errors.New("unsupported")
 )
 
 // 認証関連エラー
 var (
-	ErrGetEmailFailed      = errors.New("failed to get email")
-	ErrFailedGenerateToken = errors.New("failed to generate token")
-	// ビジネスルール
 	ErrUnAuthorized = errors.New("認証に失敗しました。")
 )
 
-// 未定義のエラー
-var (
-	ErrUnsupported = errors.New("unsupported")
-)
-
-// userのビジネスルール
+// User関連エラー
 var (
 	ErrUserNotFound       = errors.New("ユーザが見つかりません。")
 	ErrUserAlreadyExists  = errors.New("ユーザが既に存在します。")
@@ -32,6 +24,14 @@ var (
 	ErrAgeBelowZero       = errors.New("年齢が0未満です。")
 	ErrInvalidEmailAndAge = errors.New("ユーザのemailと年齢が不正です。")
 	ErrUnExpected         = errors.New("予期せぬエラーが発生しました。")
+)
+
+// Store関連エラー
+var (
+	ErrStoreNotFound         = errors.New("店舗が見つかりません。")
+	ErrStoreAlreadyExists    = errors.New("店舗が既に存在します。")
+	ErrStoreInvalidData      = errors.New("店舗のデータが不正です。")
+	ErrFailedGetNearByStores = errors.New("近くの店舗の取得に失敗しました。")
 )
 
 func Is(err, target error) bool {

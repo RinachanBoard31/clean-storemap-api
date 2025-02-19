@@ -1,10 +1,7 @@
 package db
 
 import (
-	"clean-storemap-api/src/entity/errors"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type DbUserDriver struct{}
@@ -24,17 +21,6 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-func convertGormError(err error) error {
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return errors.ErrNotFound
-	} else if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return errors.ErrDuplicate
-	} else if errors.Is(err, gorm.ErrInvalidData) {
-		return errors.ErrInvalidData
-	}
-	return errors.ErrUnsupported
-}
-
 func (dbu *DbUserDriver) CreateUser(user *User) (*User, error) {
 	result := DB.Create(&user)
 	err := result.Error
@@ -46,16 +32,16 @@ func (dbu *DbUserDriver) CreateUser(user *User) (*User, error) {
 
 func (dbu *DbUserDriver) FindByEmail(email string) (*User, error) {
 	var user *User
-	result := DB.Where("email = ?", email).First(&user)
-	if result.Error != nil {
-		return nil, convertGormError(result.Error)
+	err := DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, convertGormError(err)
 	}
 	return user, nil
 }
 
 func (dbu *DbUserDriver) UpdateUser(user *User, updateData map[string]interface{}) error {
-	result := DB.Model(&user).Updates(updateData)
-	if err := result.Error; err != nil {
+	err := DB.Model(&user).Updates(updateData).Error
+	if err != nil {
 		return convertGormError(err)
 	}
 	return nil
@@ -63,9 +49,9 @@ func (dbu *DbUserDriver) UpdateUser(user *User, updateData map[string]interface{
 
 func (dbu *DbUserDriver) FindById(id string) (*User, error) {
 	var user *User
-	result := DB.First(&user, "id = ?", id)
-	if result.Error != nil {
-		return nil, convertGormError(result.Error)
+	err := DB.First(&user, "id = ?", id).Error
+	if err != nil {
+		return nil, convertGormError(err)
 	}
 	return user, nil
 }
