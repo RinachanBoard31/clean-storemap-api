@@ -54,12 +54,12 @@ func (ap *ApiGoogleMapDriver) GetStores() ([]*Store, error) {
 	location, err := getCurrentLocation()
 	if err != nil {
 		fmt.Println("Error:", err)
-		return make([]*Store, 0), err
+		return make([]*Store, 0), ErrFailedToGetLocation
 	}
 	stores, err := searchStoresNearby(location)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return make([]*Store, 0), err
+		return make([]*Store, 0), ErrFailedToGetNearbyStores
 	}
 	return stores, nil
 }

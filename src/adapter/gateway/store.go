@@ -39,7 +39,7 @@ func NewStoreRepository(storeDriver StoreDriver, googleMapDriver GoogleMapDriver
 func (sg *StoreGateway) GetAll() ([]*model.Store, error) {
 	dbStores, err := sg.storeDriver.GetStores()
 	if err != nil {
-		return nil, err
+		return nil, sg.convertToBusinessError(err)
 	}
 	stores := make([]*model.Store, 0)
 	for _, v := range dbStores {
@@ -60,7 +60,7 @@ func (sg *StoreGateway) GetAll() ([]*model.Store, error) {
 func (sg *StoreGateway) GetNearStores() ([]*model.Store, error) {
 	apiStores, err := sg.googleMapDriver.GetStores()
 	if err != nil {
-		return nil, err
+		return nil, sg.convertToBusinessError(err)
 	}
 	stores := make([]*model.Store, 0)
 	for _, v := range apiStores {
@@ -81,7 +81,7 @@ func (sg *StoreGateway) GetNearStores() ([]*model.Store, error) {
 func (sg *StoreGateway) ExistFavorite(store *model.Store, userId string) (bool, error) {
 	dbStore, err := sg.storeDriver.FindFavorite(store.Id, userId)
 	if err != nil {
-		return false, err
+		return false, sg.convertToBusinessError(err)
 	}
 	if dbStore == nil {
 		return false, nil
@@ -92,7 +92,7 @@ func (sg *StoreGateway) ExistFavorite(store *model.Store, userId string) (bool, 
 func (sg *StoreGateway) GetFavoriteStores(userId string) ([]*model.Store, error) {
 	dbStores, err := sg.storeDriver.FindFavoriteByUser(userId)
 	if err != nil {
-		return nil, err
+		return nil, sg.convertToBusinessError(err)
 	}
 	stores := make([]*model.Store, 0)
 	for _, v := range dbStores {
@@ -124,7 +124,7 @@ func (sg *StoreGateway) SaveFavoriteStore(store *model.Store, userId string) err
 
 	err := sg.storeDriver.SaveStore(dbStore)
 	if err != nil {
-		return err
+		return sg.convertToBusinessError(err)
 	}
 
 	return nil
@@ -133,7 +133,7 @@ func (sg *StoreGateway) SaveFavoriteStore(store *model.Store, userId string) err
 func (sg *StoreGateway) GetTopFavoriteStores() ([]*model.Store, error) {
 	dbStores, err := sg.storeDriver.GetTopStores()
 	if err != nil {
-		return nil, err
+		return nil, sg.convertToBusinessError(err)
 	}
 	stores := make([]*model.Store, 0)
 	for _, v := range dbStores {

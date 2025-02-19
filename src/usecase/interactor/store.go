@@ -2,6 +2,7 @@ package interactor
 
 import (
 	model "clean-storemap-api/src/entity"
+	"clean-storemap-api/src/entity/errors"
 	port "clean-storemap-api/src/usecase/port"
 )
 
@@ -20,7 +21,7 @@ func NewStoreInputPort(storeRepository port.StoreRepository, storeOutputPort por
 func (si *StoreInteractor) GetStores() error {
 	stores, err := si.storeRepository.GetAll()
 	if err != nil {
-		return err
+		return si.storeOutputPort.OutputStoresHandleError(err)
 	}
 	return si.storeOutputPort.OutputAllStores(stores)
 }
@@ -28,7 +29,7 @@ func (si *StoreInteractor) GetStores() error {
 func (si *StoreInteractor) GetNearStores() error {
 	places, err := si.storeRepository.GetNearStores()
 	if err != nil {
-		return err
+		return si.storeOutputPort.OutputStoresHandleError(err)
 	}
 	return si.storeOutputPort.OutputAllStores(places)
 }
@@ -36,7 +37,7 @@ func (si *StoreInteractor) GetNearStores() error {
 func (si *StoreInteractor) GetFavoriteStores(userId string) error {
 	stores, err := si.storeRepository.GetFavoriteStores(userId)
 	if err != nil {
-		return err
+		return si.storeOutputPort.OutputStoresHandleError(err)
 	}
 	return si.storeOutputPort.OutputAllStores(stores)
 }
@@ -44,24 +45,21 @@ func (si *StoreInteractor) GetFavoriteStores(userId string) error {
 func (si *StoreInteractor) SaveFavoriteStore(store *model.Store, userId string) error {
 	exist, err := si.storeRepository.ExistFavorite(store, userId)
 	if err != nil {
-		return err
+		return si.storeOutputPort.OutputStoresHandleError(err)
 	}
 	if exist {
-		return si.storeOutputPort.OutputAlreadyExistFavorite()
+		return si.storeOutputPort.OutputStoresHandleError(errors.ErrFavoriteStoreAlreadyExists)
 	}
 	if err := si.storeRepository.SaveFavoriteStore(store, userId); err != nil {
-		return err
+		return si.storeOutputPort.OutputStoresHandleError(err)
 	}
-	if err := si.storeOutputPort.OutputSaveFavoriteStoreResult(); err != nil {
-		return err
-	}
-	return nil
+	return si.storeOutputPort.OutputSaveFavoriteStoreResult()
 }
 
 func (si *StoreInteractor) GetTopFavoriteStores() error {
 	stores, err := si.storeRepository.GetTopFavoriteStores()
 	if err != nil {
-		return err
+		return si.storeOutputPort.OutputStoresHandleError(err)
 	}
 	return si.storeOutputPort.OutputAllStores(stores)
 }

@@ -71,7 +71,7 @@ func getProfile(code string) (map[string]interface{}, error) {
 func (oauth *GoogleOAuthDriver) GetEmail(code string) (string, error) {
 	profile, err := getProfile(code)
 	if err != nil {
-		return "", err
+		return "", ErrGetEmailFailed
 	}
 	return profile["email"].(string), nil
 }

@@ -1,7 +1,8 @@
 package model
 
 import (
-	"errors"
+	"clean-storemap-api/src/entity/errors"
+
 	"regexp"
 )
 
@@ -26,14 +27,14 @@ func emailValid(email string) error {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
 	if !re.MatchString(email) {
-		return errors.New("emailではありません")
+		return errors.ErrInvalidEmail
 	}
 	return nil
 }
 
 func AgeValid(age int) error {
 	if age < 0 {
-		return errors.New("年齢が0未満です。")
+		return errors.ErrAgeBelowZero
 	}
 	return nil
 }
@@ -70,8 +71,8 @@ func NewUser(name string, email string, age int, sex float32, gender float32) (*
 	// バリデーションのチェック
 	emailValidError := emailValid(email)
 	ageValidError := AgeValid(age)
-	if err := errors.Join(emailValidError, ageValidError); err != nil {
-		return nil, err
+	if emailValidError != nil && ageValidError != nil {
+		return nil, errors.ErrInvalidEmailAndAge
 	}
 	// userの作成
 	user := &User{
@@ -86,10 +87,10 @@ func NewUser(name string, email string, age int, sex float32, gender float32) (*
 
 func NewUserCredentials(email string) (*UserCredentials, error) {
 	// バリデーションのチェック
-	emailValidError := emailValid(email)
-	if err := errors.Join(emailValidError); err != nil {
+	if err := emailValid(email); err != nil {
 		return &UserCredentials{}, err
 	}
+
 	user := &UserCredentials{
 		Email: email,
 	}

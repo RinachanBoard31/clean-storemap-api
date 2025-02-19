@@ -1,7 +1,6 @@
 package db
 
 import (
-	"errors"
 	"time"
 )
 
@@ -26,37 +25,33 @@ func (dbu *DbUserDriver) CreateUser(user *User) (*User, error) {
 	result := DB.Create(&user)
 	err := result.Error
 	if err != nil {
-		return nil, err
+		return nil, convertGormError(err)
 	}
 	return user, err
 }
 
 func (dbu *DbUserDriver) FindByEmail(email string) (*User, error) {
 	var user *User
-	// Firstだと存在しない場合にサーバー側でエラーが発生してしまうため、Findでエラーを発生しないようにしている
-	result := DB.Where("email = ?", email).Find(&user)
-	// 存在しない場合にエラーは発生しないので、エラーを作成する
-	if result.RowsAffected == 0 {
-		return nil, errors.New("user is not found")
+	err := DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, convertGormError(err)
 	}
 	return user, nil
 }
 
 func (dbu *DbUserDriver) UpdateUser(user *User, updateData map[string]interface{}) error {
-	result := DB.Model(&user).Updates(updateData)
-	if err := result.Error; err != nil {
-		return err
+	err := DB.Model(&user).Updates(updateData).Error
+	if err != nil {
+		return convertGormError(err)
 	}
 	return nil
 }
 
 func (dbu *DbUserDriver) FindById(id string) (*User, error) {
 	var user *User
-	// Firstだと存在しない場合にサーバー側でエラーが発生してしまうため、Findでエラーを発生しないようにしている
-	result := DB.Find(&user, "id = ?", id)
-	// 存在しない場合にエラーは発生しないので、エラーを作成する
-	if result.RowsAffected == 0 {
-		return nil, errors.New("user is not found")
+	err := DB.First(&user, "id = ?", id).Error
+	if err != nil {
+		return nil, convertGormError(err)
 	}
 	return user, nil
 }

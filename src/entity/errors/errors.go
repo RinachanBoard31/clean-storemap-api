@@ -1,0 +1,39 @@
+package errors
+
+import (
+	"errors"
+)
+
+// 汎用エラー
+var (
+	ErrDBConnection = errors.New("DB接続に失敗しました。")
+	ErrUnExpected   = errors.New("予期せぬエラーが発生しました。")
+)
+
+// 認証関連エラー
+var (
+	ErrUnAuthorized = errors.New("認証に失敗しました。")
+)
+
+// User関連エラー
+var (
+	ErrUserNotFound       = errors.New("ユーザが見つかりません。")
+	ErrUserAlreadyExists  = errors.New("ユーザが既に存在します。")
+	ErrUserInvalidData    = errors.New("ユーザのデータが不正です。")
+	ErrInvalidEmail       = errors.New("ユーザのemailが不正です。")
+	ErrAgeBelowZero       = errors.New("年齢が0未満です。")
+	ErrInvalidEmailAndAge = errors.New("ユーザのemailと年齢が不正です。")
+)
+
+// Store関連エラー
+var (
+	ErrStoreNotFound              = errors.New("店舗が見つかりません。")
+	ErrStoreAlreadyExists         = errors.New("店舗が既に存在します。")
+	ErrStoreInvalidData           = errors.New("店舗のデータが不正です。")
+	ErrFailedGetNearByStores      = errors.New("近くの店舗の取得に失敗しました。")
+	ErrFavoriteStoreAlreadyExists = errors.New("お気に入りに登録されている店舗が既に存在します。")
+)
+
+func Is(err, target error) bool {
+	return errors.Is(err, target)
+}

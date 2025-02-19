@@ -2,6 +2,7 @@ package presenter
 
 import (
 	model "clean-storemap-api/src/entity"
+	"clean-storemap-api/src/entity/errors"
 	"testing"
 
 	"net/http"
@@ -18,6 +19,33 @@ func newRouter() (echo.Context, *httptest.ResponseRecorder) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	return c, rec
+}
+
+func TestOutputStoresHandleError(t *testing.T) {
+	/* Arrange */
+	testCases := []struct {
+		input        error
+		expectedCode int
+		expected     string
+	}{
+		{input: errors.ErrStoreNotFound, expectedCode: http.StatusNotFound, expected: "{\"error\":\"お店が登録されていません。\"}\n"},
+		{input: errors.ErrStoreAlreadyExists, expectedCode: http.StatusConflict, expected: "{\"error\":\"そのお店はすでに登録されています。\"}\n"},
+		{input: errors.ErrFavoriteStoreAlreadyExists, expectedCode: http.StatusConflict, expected: "{\"error\":\"そのお店はすでにお気に入りに登録されています。\"}\n"},
+		{input: errors.ErrStoreInvalidData, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"不正なデータが含まれています。\"}\n"},
+		{input: errors.ErrFailedGetNearByStores, expectedCode: http.StatusInternalServerError, expected: "{\"error\":\"お店の取得に失敗しました。\"}\n"},
+		{input: errors.ErrUnExpected, expectedCode: http.StatusInternalServerError, expected: "{\"error\":\"予期しないエラーが発生しました\"}\n"},
+	}
+	/* Act, Assert */
+	for _, tc := range testCases {
+		// recが1ループごとに切れないのでrouterは毎回作り直す。
+		c, rec := newRouter()
+		sp := &StorePresenter{c: c}
+		actual := sp.OutputStoresHandleError(tc.input)
+		if assert.NoError(t, actual) {
+			assert.Equal(t, tc.expectedCode, rec.Code)
+			assert.Equal(t, tc.expected, rec.Body.String())
+		}
+	}
 }
 
 func TestOutputAllStores(t *testing.T) {
@@ -58,22 +86,6 @@ func TestOutputSaveFavoriteStoreResult(t *testing.T) {
 
 	/* Assert */
 	// sp.OutputSaveFavoriteStoreResult()がJSONを返すこ
-	if assert.NoError(t, actual) {
-		assert.Equal(t, expected, rec.Body.String())
-	}
-}
-
-func TestOutputAlreadyExistFavorite(t *testing.T) {
-	/* Arrange */
-	expected := "{\"error\":\"Already exist favorite store\"}\n"
-	c, rec := newRouter()
-	sp := &StorePresenter{c: c}
-
-	/* Act */
-	actual := sp.OutputAlreadyExistFavorite()
-
-	/* Assert */
-	// sp.OutputAlreadyExistFavorite()がJSONを返すこと
 	if assert.NoError(t, actual) {
 		assert.Equal(t, expected, rec.Body.String())
 	}

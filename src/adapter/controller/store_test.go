@@ -69,17 +69,17 @@ func (m *MockGoogleMapDriverFactory) GetStores() ([]*api.Store, error) {
 	return args.Get(0).([]*api.Store), args.Error(1)
 }
 
+func (m *MockStoreOutputFactoryFuncObject) OutputStoresHandleError(err error) error {
+	args := m.Called(err)
+	return args.Error(0)
+}
+
 func (m *MockStoreOutputFactoryFuncObject) OutputAllStores([]*model.Store) error {
 	args := m.Called()
 	return args.Error(0)
 }
 
 func (m *MockStoreOutputFactoryFuncObject) OutputSaveFavoriteStoreResult() error {
-	args := m.Called()
-	return args.Error(0)
-}
-
-func (m *MockStoreOutputFactoryFuncObject) OutputAlreadyExistFavorite() error {
 	args := m.Called()
 	return args.Error(0)
 }

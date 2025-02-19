@@ -22,7 +22,7 @@ func (auth *JwtDriver) GenerateToken(subject string) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // 有効期限は24時間
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SIGNING_KEY")))
 	if err != nil {
-		return "", err
+		return "", ErrFailedGenerateToken
 	}
 	return tokenString, nil
 }
