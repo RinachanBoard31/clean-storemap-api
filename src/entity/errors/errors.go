@@ -6,8 +6,8 @@ import (
 
 // 汎用エラー
 var (
-	ErrDBConnection = errors.New("failed to connect database")
-	ErrUnsupported  = errors.New("unsupported")
+	ErrDBConnection = errors.New("DB接続に失敗しました。")
+	ErrUnExpected   = errors.New("予期せぬエラーが発生しました。")
 )
 
 // 認証関連エラー
@@ -23,7 +23,6 @@ var (
 	ErrInvalidEmail       = errors.New("ユーザのemailが不正です。")
 	ErrAgeBelowZero       = errors.New("年齢が0未満です。")
 	ErrInvalidEmailAndAge = errors.New("ユーザのemailと年齢が不正です。")
-	ErrUnExpected         = errors.New("予期せぬエラーが発生しました。")
 )
 
 // Store関連エラー

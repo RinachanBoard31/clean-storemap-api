@@ -39,7 +39,7 @@ func TestOutputHandleError(t *testing.T) {
 		{input: errors.ErrInvalidEmail, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"Emailが適した形ではありません。\"}\n"},
 		{input: errors.ErrAgeBelowZero, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"年齢が0未満です。\"}\n"},
 		{input: errors.ErrUnAuthorized, expectedCode: http.StatusUnauthorized, expected: "{\"error\":\"認証に失敗しました。\"}\n"},
-		{input: errors.ErrUnsupported, expectedCode: http.StatusInternalServerError, expected: "{\"error\":\"予期しないエラーが発生しました\"}\n"},
+		{input: errors.ErrUnExpected, expectedCode: http.StatusInternalServerError, expected: "{\"error\":\"予期しないエラーが発生しました\"}\n"},
 	}
 	/* Act, Assert */
 	for _, tc := range testCases {

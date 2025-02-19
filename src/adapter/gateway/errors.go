@@ -18,7 +18,7 @@ func (ug *UserGateway) convertToBusinessError(err error) error {
 	} else if errors.Is(err, dbErr.ErrInvalidDB) {
 		return errors.ErrDBConnection
 	} else if errors.Is(err, dbErr.ErrUnsupported) {
-		return errors.ErrUnsupported
+		return errors.ErrUnExpected
 	}
 	// Auth
 	if errors.Is(err, authErr.ErrGetEmailFailed) {
@@ -46,7 +46,7 @@ func (sg *StoreGateway) convertToBusinessError(err error) error {
 	} else if errors.Is(err, dbErr.ErrInvalidValue) {
 		return errors.ErrDBConnection
 	} else if errors.Is(err, dbErr.ErrUnsupported) {
-		return errors.ErrUnsupported
+		return errors.ErrUnExpected
 	}
 	// API
 	if errors.Is(err, apiErr.ErrFailedToGetLocation) {
