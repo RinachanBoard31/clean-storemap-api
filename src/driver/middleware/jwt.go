@@ -21,14 +21,14 @@ func JwtAuthMiddleware() echo.MiddlewareFunc {
 			cookie, err := c.Cookie(os.Getenv("JWT_TOKEN_NAME"))
 			if err != nil {
 				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"error": "Token not found",
+					"error": "不正なアクセスです。",
 				})
 			}
 			claims, err := validateJwtOnSelf(cookie)
 			if err != nil {
 				fmt.Printf("Request is %s: %s \nError: %s\n", c.Request().Method, c.Request().URL, err)
 				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"error": "Invalid or expired token",
+					"error": "不正なアクセスです。",
 				})
 			}
 			userId := claims["sub"].(string)
@@ -43,7 +43,7 @@ func validateJwtOnSelf(cookie *http.Cookie) (jwt.MapClaims, error) {
 	tokenString := cookie.Value
 	jwtData := strings.Split(tokenString, ".")
 	if len(jwtData) != 3 { // ヘッダー、ペイロード、シグネチャの3つに分かれているか確認
-		return nil, fmt.Errorf("Token is not included header, payload or signature")
+		return nil, fmt.Errorf("token is not included header, payload or signature")
 	}
 	header, err := decodeBase64Url(jwtData[0])
 	if err != nil {
@@ -60,7 +60,7 @@ func validateJwtOnSelf(cookie *http.Cookie) (jwt.MapClaims, error) {
 	if payloadData["exp"] != nil { // 有効期限の確認
 		expTime := int64(payloadData["exp"].(float64))
 		if expTime < time.Now().Unix() {
-			return nil, fmt.Errorf("Token expired")
+			return nil, fmt.Errorf("token expired")
 		}
 	}
 
