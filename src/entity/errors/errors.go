@@ -27,10 +27,11 @@ var (
 
 // Store関連エラー
 var (
-	ErrStoreNotFound         = errors.New("店舗が見つかりません。")
-	ErrStoreAlreadyExists    = errors.New("店舗が既に存在します。")
-	ErrStoreInvalidData      = errors.New("店舗のデータが不正です。")
-	ErrFailedGetNearByStores = errors.New("近くの店舗の取得に失敗しました。")
+	ErrStoreNotFound              = errors.New("店舗が見つかりません。")
+	ErrStoreAlreadyExists         = errors.New("店舗が既に存在します。")
+	ErrStoreInvalidData           = errors.New("店舗のデータが不正です。")
+	ErrFailedGetNearByStores      = errors.New("近くの店舗の取得に失敗しました。")
+	ErrFavoriteStoreAlreadyExists = errors.New("お気に入りに登録されている店舗が既に存在します。")
 )
 
 func Is(err, target error) bool {

@@ -22,7 +22,7 @@ type StoreRepository interface {
 }
 
 type StoreOutputPort interface {
+	OutputStoresHandleError(error) error
 	OutputAllStores([]*model.Store) error
 	OutputSaveFavoriteStoreResult() error
-	OutputAlreadyExistFavorite() error
 }

@@ -46,17 +46,17 @@ func (m *MockStoreRepository) GetTopFavoriteStores() ([]*model.Store, error) {
 	return args.Get(0).([]*model.Store), args.Error(1)
 }
 
+func (m *MockStoreOutputPort) OutputStoresHandleError(err error) error {
+	args := m.Called(err)
+	return args.Error(0)
+}
+
 func (m *MockStoreOutputPort) OutputAllStores(stores []*model.Store) error {
 	args := m.Called(stores)
 	return args.Error(0)
 }
 
 func (m *MockStoreOutputPort) OutputSaveFavoriteStoreResult() error {
-	args := m.Called()
-	return args.Error(0)
-}
-
-func (m *MockStoreOutputPort) OutputAlreadyExistFavorite() error {
 	args := m.Called()
 	return args.Error(0)
 }
