@@ -18,7 +18,7 @@ func NewUserOutputPort(c echo.Context) port.UserOutputPort {
 	return &UserPresenter{c: c}
 }
 
-func (up *UserPresenter) OutputHandleError(err error) error {
+func (up *UserPresenter) OutputUserHandleError(err error) error {
 	if errors.Is(err, errors.ErrUserNotFound) {
 		return up.c.JSON(http.StatusNotFound, map[string]interface{}{"error": "Userが登録されていません。"})
 	} else if errors.Is(err, errors.ErrUserAlreadyExists) {
