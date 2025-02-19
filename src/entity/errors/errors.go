@@ -19,7 +19,7 @@ var (
 var (
 	ErrUserNotFound       = errors.New("ユーザが見つかりません。")
 	ErrUserAlreadyExists  = errors.New("ユーザが既に存在します。")
-	ErrInvalidUserData    = errors.New("ユーザのデータが不正です。")
+	ErrUserInvalidData    = errors.New("ユーザのデータが不正です。")
 	ErrInvalidEmail       = errors.New("ユーザのemailが不正です。")
 	ErrAgeBelowZero       = errors.New("年齢が0未満です。")
 	ErrInvalidEmailAndAge = errors.New("ユーザのemailと年齢が不正です。")

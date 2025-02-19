@@ -23,7 +23,7 @@ func (up *UserPresenter) HandleError(err error) error {
 		return up.c.JSON(http.StatusNotFound, map[string]interface{}{"error": "Userが登録されていません。"})
 	} else if errors.Is(err, errors.ErrUserAlreadyExists) {
 		return up.c.JSON(http.StatusConflict, map[string]interface{}{"error": "そのemailはすでに登録されています。"})
-	} else if errors.Is(err, errors.ErrInvalidUserData) {
+	} else if errors.Is(err, errors.ErrUserInvalidData) {
 		return up.c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "不正なデータが含まれています。"})
 	} else if errors.Is(err, errors.ErrInvalidEmail) {
 		return up.c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Emailが適した形ではありません。"})

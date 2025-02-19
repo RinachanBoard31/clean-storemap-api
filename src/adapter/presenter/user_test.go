@@ -35,7 +35,7 @@ func TestHandleError(t *testing.T) {
 	}{
 		{input: errors.ErrUserNotFound, expectedCode: http.StatusNotFound, expected: "{\"error\":\"Userが登録されていません。\"}\n"},
 		{input: errors.ErrUserAlreadyExists, expectedCode: http.StatusConflict, expected: "{\"error\":\"そのemailはすでに登録されています。\"}\n"},
-		{input: errors.ErrInvalidUserData, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"不正なデータが含まれています。\"}\n"},
+		{input: errors.ErrUserInvalidData, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"不正なデータが含まれています。\"}\n"},
 		{input: errors.ErrInvalidEmail, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"Emailが適した形ではありません。\"}\n"},
 		{input: errors.ErrAgeBelowZero, expectedCode: http.StatusBadRequest, expected: "{\"error\":\"年齢が0未満です。\"}\n"},
 		{input: errors.ErrUnAuthorized, expectedCode: http.StatusUnauthorized, expected: "{\"error\":\"認証に失敗しました。\"}\n"},

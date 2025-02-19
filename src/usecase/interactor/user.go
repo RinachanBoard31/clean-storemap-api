@@ -21,7 +21,7 @@ func NewUserInputPort(userRepository port.UserRepository, userOutputPort port.Us
 func (ui *UserInteractor) UpdateUser(id string, updateData model.ChangeForUser) error {
 	// emailを更新しようとした場合にはエラーを返す
 	if _, ok := updateData["email"]; ok {
-		return ui.userOutputPort.HandleError(errors.ErrInvalidUserData)
+		return ui.userOutputPort.HandleError(errors.ErrUserInvalidData)
 	}
 
 	// 整形する

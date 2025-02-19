@@ -14,7 +14,7 @@ func (ug *UserGateway) convertToBusinessError(err error) error {
 	} else if errors.Is(err, dbErr.ErrDuplicatedKey) {
 		return errors.ErrUserAlreadyExists
 	} else if errors.Is(err, dbErr.ErrInvalidData) {
-		return errors.ErrInvalidUserData
+		return errors.ErrUserInvalidData
 	} else if errors.Is(err, dbErr.ErrInvalidDB) {
 		return errors.ErrDBConnection
 	} else if errors.Is(err, dbErr.ErrUnsupported) {
